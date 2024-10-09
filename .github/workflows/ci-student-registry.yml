@@ -1,12 +1,10 @@
-name: CI Workflow for Student Registry App
+name: CI Workflow for "Student Registry" App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -17,20 +15,23 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Start the app
-        run: npm start &
-      
+      - name: Start the application
+        run: npm start &  # Run the app in the background
+
+      - name: Wait for the application to start
+        run: sleep 10  # Wait for a few seconds for the app to start
+
       - name: Run tests
-        run: npm test
+        run: npm test  # Run tests to validate the app
