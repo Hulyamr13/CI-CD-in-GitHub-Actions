@@ -1,30 +1,30 @@
-name: CI Workflow – "Student Registry" App
+name: CI Workflow for Student Registry
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main 
 
 jobs:
-  run-tests:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'  # Use the latest Node.js version
-      
-      - name: Install dependencies
-        run: npm ci  # Install dependencies using package-lock.json
-      
-      - name: Run tests
-        run: npm test  # Run the default test script
+        uses: actions/checkout@v2
 
-      # Optional: Uncomment if you have a test-unit script
-      # - name: Run unit tests
-      #   run: npm run test-unit  # Ensure this script exists in package.json
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x' 
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start the app
+        run: npm start &
+        env:
+          PORT: 8080 
+
+      - name: Run tests
+        run: npm test
