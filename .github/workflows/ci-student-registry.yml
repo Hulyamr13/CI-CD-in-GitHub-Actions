@@ -1,4 +1,4 @@
-name: Node.JS CI/CD
+name: CI Workflow – "Student Registry" App
 
 on:
   push:
@@ -12,32 +12,21 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [20.x]  # Update this to 20.x
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm install
-    - name: Start app
-      run: npm start &
-    - name: Run tests
-      run: npm test
-
-   # Heavily modified deploy job to fit render.com
-  deploy:
-    name: Deploy
-    needs: [test] # Our tests must pass in order to run the deploy job
-    runs-on: ubuntu-latest
-
-    steps: 
-      - name: Deploy to production
-        uses: johnbeynon/render-deploy-action@v0.0.8
+      - name: Checkout program code
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          service-id: ${{ secrets.SERVICE_ID }} # Can be found as part of the Deploy Hook
-          api-key: ${{ secrets.RENDER_API_KEY }} # Create your API key in Render Dashboard > Account Settings
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Start the application
+        run: npm start &
+      - name: Wait for the application to start
+        run: sleep 10  # Wait for 10 seconds to ensure the app has started
+      - name: Test program code with unit tests
+        run: npm test
