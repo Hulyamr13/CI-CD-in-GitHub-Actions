@@ -1,0 +1,45 @@
+name: CI/CD Workflow - "Student Registry" App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'npm'
+        
+      - name: Install dependencies
+        run: npm ci  # Използване на npm ci за инсталиране на зависимостите
+      
+      - name: Start application
+        run: npm start &  # Стартиране на приложението на заден план
+
+      - name: Wait for the app to start
+        run: sleep 5  # Изчакване, за да сме сигурни, че приложението е стартирало
+      
+      - name: Run tests
+        run: npm test  # Изпълнение на тестовете
+
+  deploy:
+    name: Deploy
+    needs: run-tests  # Задължително тестовете да преминат
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}  # ID на услугата от Render.com
+          api-key: ${{ secrets.API_KEY }}  # API токен от Render.com
