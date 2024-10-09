@@ -7,26 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  run-tests:
+
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x]  # Update this to 20.x
-
     steps:
-      - name: Checkout program code
-        uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Start the application
-        run: npm start &
-      - name: Wait for the application to start
-        run: sleep 10  # Wait for 10 seconds to ensure the app has started
-      - name: Test program code with unit tests
-        run: npm test
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+    - run: npm ci
+    - run: npm test
+    - run: npm run test-unit
